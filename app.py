@@ -35,8 +35,11 @@ async def run_agent():
 
             # Create and run the agent
             agent = create_react_agent(model, tools)
-            agent_response = await agent.ainvoke({"messages": "what's (3 + 5) x 12?"})
-            return agent_response
+            agent_response_tool = await agent.ainvoke({"messages": "what's (3 + 5) x 12?"})
+            agent_response__llm = await agent.ainvoke({"messages": "capital of india"})
+            print(agent_response_tool)
+            print("Next one :")
+            print(agent_response__llm)
 
 # Run the async function
 if __name__ == "__main__":
