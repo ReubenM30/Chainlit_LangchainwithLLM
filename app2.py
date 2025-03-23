@@ -45,20 +45,30 @@ async def on_chat_start():
         [
             (
                 "system",
-                "You are an assistant that uses all tools at your disposal",
+                "You're a helpful assistant. Always call the appropriate tool when available.",
             ),
             ("human", "{question}"),
         ]
     )
 
     tools = await init_mcp_tools()
+    #print("DEBUG: Loaded tools:", tools)
     agent = create_react_agent(model, tools)
 
 
     def extract_text(response):
-        if isinstance(response, dict) and "output" in response:
-         return response["output"]
-        return str(response)  # Fallback to string conversion
+        print(response)
+        print(response.get("agent", {}).get("messages", []))
+        messages = response.get("agent", {}).get("messages", [])
+        ai_content = messages[0].content  # Extract content from the first AIMessage
+        print("AI Response:", ai_content)
+
+        if "tool_calls" in response:
+            print("DEBUG: Tool Calls Detected:", response["tool_calls"])
+        else:
+            print("❌ No tools were called.")
+
+        return ai_content
 
 
     runnable = prompt | agent | RunnableLambda(extract_text)
